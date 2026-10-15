@@ -116,8 +116,11 @@ class MCPHttpHandler(BaseHTTPRequestHandler):
             rel_name = path[len("/branding/dist/"):]
             target = branding_dir / rel_name
             ext = target.suffix.lower()
-            ct = "image/png" if ext == ".png" else "image/svg+xml" if ext == ".svg" else "image/x-icon" if ext == ".ico" else "application/octet-stream"
+            ct = "image/png" if ext == ".png" else "image/svg+xml" if ext == ".svg" else "image/x-icon" if ext == ".ico" else "application/zip" if ext == ".zip" else "application/octet-stream"
             self._serve_static_file(target, ct)
+            return
+        if path in ("/brand-kit.zip", "/brand-kit", "/antigravity-mcp-brand-kit.zip"):
+            self._serve_static_file(branding_dir / "antigravity-mcp-brand-kit.zip", "application/zip")
             return
         if path in ("/favicon.ico",):
             self._serve_static_file(branding_dir / "favicon.ico", "image/x-icon")
