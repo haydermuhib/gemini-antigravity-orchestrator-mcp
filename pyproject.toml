@@ -38,6 +38,7 @@ dependencies = []
 
 [project.scripts]
 antigravity-mcp = "antigravity_mcp.cli:main"
+gemini-antigravity-mcp = "antigravity_mcp.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/haydermuhib/gemini-antigravity-orchestrator-mcp"
