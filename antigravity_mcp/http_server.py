@@ -112,6 +112,13 @@ class MCPHttpHandler(BaseHTTPRequestHandler):
 
         # 0. Static Branding & Connector Assets
         branding_dir = Path(__file__).resolve().parent.parent / "branding" / "dist"
+        if path.startswith("/branding/dist/"):
+            rel_name = path[len("/branding/dist/"):]
+            target = branding_dir / rel_name
+            ext = target.suffix.lower()
+            ct = "image/png" if ext == ".png" else "image/svg+xml" if ext == ".svg" else "image/x-icon" if ext == ".ico" else "application/octet-stream"
+            self._serve_static_file(target, ct)
+            return
         if path in ("/favicon.ico",):
             self._serve_static_file(branding_dir / "favicon.ico", "image/x-icon")
             return
@@ -123,6 +130,12 @@ class MCPHttpHandler(BaseHTTPRequestHandler):
             return
         if path in ("/logo.svg", "/favicon.svg"):
             self._serve_static_file(branding_dir / "favicon.svg", "image/svg+xml")
+            return
+        if path in ("/logo-dark.svg",):
+            self._serve_static_file(branding_dir / "logo-dark.svg", "image/svg+xml")
+            return
+        if path in ("/logo-dark-lockup.png",):
+            self._serve_static_file(branding_dir / "logo-dark-lockup.png", "image/png")
             return
         if path in ("/site.webmanifest", "/manifest.json"):
             self._serve_static_file(branding_dir / "site.webmanifest", "application/manifest+json")
