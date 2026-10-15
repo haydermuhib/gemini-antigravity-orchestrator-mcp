@@ -302,14 +302,26 @@
       align-items: center;
       justify-content: space-between;
       gap: 16px;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
     }
 
     .install-cmd {
       font-family: 'JetBrains Mono', monospace;
       font-size: 15px;
       color: var(--green-arcade);
-      word-break: break-all;
+      white-space: nowrap;
+      overflow-x: auto;
+      flex: 1;
+      min-width: 0;
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE and Edge */
+      padding: 4px 0;
+    }
+
+    .install-cmd::-webkit-scrollbar {
+      display: none; /* Chrome, Safari, Opera */
+      width: 0;
+      height: 0;
     }
 
     .install-cmd span {
@@ -327,6 +339,7 @@
       box-shadow: 2px 2px 0 #000;
       cursor: pointer;
       user-select: none;
+      flex-shrink: 0;
     }
     .copy-btn:active {
       transform: translate(1px, 1px);
@@ -764,6 +777,7 @@
       document.getElementById('tabCurl').classList.remove('active');
 
       const cmdText = document.getElementById('installCmdText');
+      if (cmdText) cmdText.scrollLeft = 0;
       if (type === 'pip') {
         document.getElementById('tabPip').classList.add('active');
         activeCmd = "pip install antigravity-mcp";
@@ -777,6 +791,16 @@
         activeCmd = "curl -fsSL https://raw.githubusercontent.com/haydermuhib/gemini-antigravity-orchestrator-mcp/main/install.sh | bash";
         cmdText.innerHTML = '<span>$ </span>curl -fsSL https://raw.githubusercontent.com/haydermuhib/gemini-antigravity-orchestrator-mcp/main/install.sh | bash';
       }
+    }
+
+    const cmdEl = document.getElementById('installCmdText');
+    if (cmdEl) {
+      cmdEl.addEventListener('wheel', (e) => {
+        if (e.deltaY !== 0) {
+          e.preventDefault();
+          cmdEl.scrollLeft += e.deltaY;
+        }
+      }, { passive: false });
     }
 
     function copyInstallCmd() {
