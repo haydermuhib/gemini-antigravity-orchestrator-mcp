@@ -16,6 +16,7 @@ import argparse
 import subprocess
 import threading
 from pathlib import Path
+from typing import Optional
 
 from .ui import (
     Spinner,
@@ -340,7 +341,7 @@ def main():
         # In-place spinner for initial workspace inspection
         with Spinner("Scanning workspace for Antigravity skills, rules, and plugins...") as sp:
             server_instance = MCPServer(workspace_root=str(workspace_root))
-            skills_count = len(server_instance.engine.get_all_skills())
+            skills_count = len(server_instance.engine.list_skills(scope="all"))
             sp.succeed(f"Workspace initialized: {Color.BOLD}{skills_count} skills{Color.RESET}, 3 plugins discovered.")
 
         render_box("LOCAL ENDPOINT DETAILS", [
