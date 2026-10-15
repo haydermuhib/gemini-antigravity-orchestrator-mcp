@@ -68,30 +68,9 @@ CLI_PATH="$BIN_DIR/antigravity-mcp"
 cat << EOF > "$CLI_PATH"
 #!/usr/bin/env bash
 PROJECT_DIR="$REPO_DIR"
+export PYTHONPATH="\$PROJECT_DIR:\$PYTHONPATH"
 
-case "\$1" in
-    start)
-        exec "\$PROJECT_DIR/start_daemon.sh" "\${@:2}"
-        ;;
-    stop)
-        exec "\$PROJECT_DIR/stop_daemon.sh" "\${@:2}"
-        ;;
-    status)
-        exec "\$PROJECT_DIR/status.sh" "\${@:2}"
-        ;;
-    tunnel)
-        exec python3 "\$PROJECT_DIR/server.py" --tunnel "\${@:2}"
-        ;;
-    server)
-        exec python3 "\$PROJECT_DIR/server.py" --http "\${2:-8080}"
-        ;;
-    stdio|--stdio)
-        exec python3 "\$PROJECT_DIR/server.py" --stdio --workspace "\$PWD" "\${@:2}"
-        ;;
-    *)
-        exec python3 "\$PROJECT_DIR/server.py" "\$@"
-        ;;
-esac
+exec python3 "\$PROJECT_DIR/server.py" --workspace "\$PWD" "\$@"
 EOF
 
 chmod +x "$CLI_PATH"
