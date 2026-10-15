@@ -5,9 +5,12 @@ for Google Antigravity IDE and Workspace/Global Customizations.
 
 import os
 import re
+import sys
 import json
 import glob
 import time
+import shutil
+import platform
 import subprocess
 from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple
@@ -108,9 +111,9 @@ class AntigravityEngine:
                 "recent_conversations": len(recent_convs)
             },
             "environment": {
-                "python_version": subprocess.getoutput("python3 --version"),
-                "node_version": subprocess.getoutput("node --version") if subprocess.run(["which", "node"], capture_output=True).returncode == 0 else "not installed",
-                "platform": os.uname().sysname if hasattr(os, "uname") else "unknown"
+                "python_version": sys.version.split()[0],
+                "node_version": subprocess.getoutput("node --version") if shutil.which("node") else "not installed",
+                "platform": platform.system()
             }
         }
 

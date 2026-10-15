@@ -4,7 +4,7 @@ version = "1.0.0"
 description = "Antigravity MCP Orchestrator Server for Google Gemini & Antigravity IDE"
 authors = ["Haider"]
 channels = ["conda-forge"]
-platforms = ["linux-64"]
+platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
 
 [dependencies]
 python = ">=3.10"
