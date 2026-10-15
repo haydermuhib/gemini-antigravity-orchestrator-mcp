@@ -1,0 +1,27 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Pixi environment
+.pixi/
+.bin/
+
+# Runtime and daemon state
+mcp_server.log
+current_tunnel_url.txt
+.pids/
+*.pid
+
+# Virtual environments
+.venv/
+env/
+venv/
+ENV/
+
+# Sensitive or temporary files
+.env
+*.swp
+*.swo
+*~
+.DS_Store

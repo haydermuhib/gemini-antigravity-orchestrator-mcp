@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "antigravity-orchestrator": {
+      "command": "python3",
+      "args": [
+        "/home/haider/Desktop/MyGithub/design001/server.py",
+        "--workspace",
+        "/home/haider/Desktop/MyGithub/design001"
+      ],
+      "env": {
+        "PYTHONUNBUFFERED": "1"
+      }
+    }
+  }
+}

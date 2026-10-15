@@ -1,0 +1,19 @@
+[workspace]
+name = "antigravity-mcp"
+version = "1.0.0"
+description = "Antigravity MCP Orchestrator Server for Google Gemini & Antigravity IDE"
+authors = ["Haider"]
+channels = ["conda-forge"]
+platforms = ["linux-64"]
+
+[dependencies]
+python = ">=3.10"
+
+[tasks]
+server = "python3 server.py"
+tunnel = "python3 server.py --tunnel"
+test = "python3 test_mcp.py"
+test-http = "python3 test_http_mcp.py"
+start = "./start_daemon.sh"
+stop = "./stop_daemon.sh"
+status = "./status.sh"
