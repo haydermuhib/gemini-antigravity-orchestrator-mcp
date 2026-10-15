@@ -149,7 +149,7 @@ class Spinner:
             self.succeed()
 
 
-def get_terminal_width(default: int = 70) -> int:
+def get_terminal_width(default: int = 76) -> int:
     """Returns safe width for formatting bounded between 40 and 80 columns."""
     try:
         cols, _ = shutil.get_terminal_size((default, 24))
@@ -158,8 +158,8 @@ def get_terminal_width(default: int = 70) -> int:
         return default
 
 
-def render_banner(version: str = "1.0.0") -> None:
-    """Renders high-contrast modern retro-terminal banner."""
+def render_banner(version: str = "1.0.2") -> None:
+    """Renders high-contrast modern retro-terminal banner with exact column alignment."""
     w = get_terminal_width()
     inner = w - 4
 
@@ -168,28 +168,30 @@ def render_banner(version: str = "1.0.0") -> None:
     c_sub = Color.GRAY
     c_v = Color.CYAN
 
+    line1 = f"{c_title}●{Color.RESET} ANTIGRAVITY MCP ORCHESTRATOR {c_v}v{version}{Color.RESET}"
+    line2 = f"{c_sub}Model Context Protocol for Google Gemini & Antigravity IDE{Color.RESET}"
+
+    pad1 = max(inner - len(strip_ansi(line1)), 0)
+    pad2 = max(inner - len(strip_ansi(line2)), 0)
+
     print()
     print(f"{c_border}╭{'─' * (w - 2)}╮{Color.RESET}")
-    title_line = f" ANTIGRAVITY MCP ORCHESTRATOR {c_v}v{version}{Color.RESET}"
-    pad1 = inner - (30 + len(version))
-    print(f"{c_border}│{Color.RESET} {c_title}●{Color.RESET}{title_line}{' ' * max(pad1, 1)}{c_border}│{Color.RESET}")
-
-    sub_line = f" Model Context Protocol for Google Gemini & Antigravity IDE"
-    pad2 = inner - len(sub_line)
-    print(f"{c_border}│{Color.RESET}{c_sub}{sub_line}{Color.RESET}{' ' * max(pad2, 1)}{c_border}│{Color.RESET}")
+    print(f"{c_border}│{Color.RESET} {line1}{' ' * pad1} {c_border}│{Color.RESET}")
+    print(f"{c_border}│{Color.RESET} {line2}{' ' * pad2} {c_border}│{Color.RESET}")
     print(f"{c_border}╰{'─' * (w - 2)}╯{Color.RESET}")
 
 
 def render_box(title: str, rows: List[tuple], border_color: str = Color.DARK_GRAY, width: Optional[int] = None) -> None:
     """
-    Renders structured key-value card with rounded corners and consistent padding.
+    Renders structured key-value card with rounded corners and mathematically exact padding.
     """
     w = width or get_terminal_width()
     inner = w - 4
 
-    print(f"{border_color}╭─ {Color.BOLD}{title}{Color.RESET} {border_color}{'─' * max(w - len(title) - 6, 2)}╮{Color.RESET}")
+    top_dashes = max(w - len(title) - 5, 2)
+    print(f"{border_color}╭─ {Color.BOLD}{title}{Color.RESET} {border_color}{'─' * top_dashes}╮{Color.RESET}")
 
-    max_key_len = max((len(k) for k, _ in rows if k), default=12)
+    max_key_len = max((len(k) for k, _ in rows if k and k != "---"), default=12)
 
     for k, v in rows:
         if k == "---":
@@ -197,14 +199,21 @@ def render_box(title: str, rows: List[tuple], border_color: str = Color.DARK_GRA
             continue
         if not k:
             # Full width value line
-            pad = inner - len(strip_ansi(v))
-            print(f"{border_color}│{Color.RESET} {v}{' ' * max(pad, 0)} {border_color}│{Color.RESET}")
+            v_plain = strip_ansi(v)
+            if len(v_plain) > inner:
+                v = v_plain[:inner - 1] + "…"
+            pad = max(inner - len(strip_ansi(v)), 0)
+            print(f"{border_color}│{Color.RESET} {v}{' ' * pad} {border_color}│{Color.RESET}")
         else:
             k_fmt = f"{Color.GRAY}{k.ljust(max_key_len)}{Color.RESET}"
-            content = f" {k_fmt}  {v}"
-            plain_len = 1 + max_key_len + 2 + len(strip_ansi(v))
-            pad = inner - plain_len
-            print(f"{border_color}│{Color.RESET}{content}{' ' * max(pad, 0)} {border_color}│{Color.RESET}")
+            max_v_len = max(inner - max_key_len - 2, 0)
+            v_plain = strip_ansi(v)
+            if len(v_plain) > max_v_len:
+                v = v_plain[:max_v_len - 1] + "…"
+            content = f"{k_fmt}  {v}"
+            plain_len = len(strip_ansi(content))
+            pad = max(inner - plain_len, 0)
+            print(f"{border_color}│{Color.RESET} {content}{' ' * pad} {border_color}│{Color.RESET}")
 
     print(f"{border_color}╰{'─' * (w - 2)}╯{Color.RESET}")
 
@@ -214,8 +223,11 @@ def render_connection_guide(tunnel_url: str) -> None:
     w = get_terminal_width()
     inner = w - 4
 
+    title = "GOOGLE GEMINI CONNECTED APPS READY"
+    top_dashes = max(w - len(title) - 5, 2)
+
     print()
-    print(f"{Color.GREEN}╭─ {Color.BOLD}GOOGLE GEMINI CONNECTED APPS READY{Color.RESET} {Color.GREEN}{'─' * max(w - 38, 2)}╮{Color.RESET}")
+    print(f"{Color.GREEN}╭─ {Color.BOLD}{title}{Color.RESET} {Color.GREEN}{'─' * top_dashes}╮{Color.RESET}")
 
     lines = [
         f"{Color.GRAY}Copy and paste the SSE URL below into Gemini:{Color.RESET}",
@@ -227,8 +239,11 @@ def render_connection_guide(tunnel_url: str) -> None:
     ]
 
     for line in lines:
-        pad = inner - len(strip_ansi(line))
-        print(f"{Color.GREEN}│{Color.RESET} {line}{' ' * max(pad, 0)} {Color.GREEN}│{Color.RESET}")
+        line_plain = strip_ansi(line)
+        if len(line_plain) > inner:
+            line = line_plain[:inner - 1] + "…"
+        pad = max(inner - len(strip_ansi(line)), 0)
+        print(f"{Color.GREEN}│{Color.RESET} {line}{' ' * pad} {Color.GREEN}│{Color.RESET}")
 
     print(f"{Color.GREEN}╰{'─' * (w - 2)}╯{Color.RESET}")
     print()

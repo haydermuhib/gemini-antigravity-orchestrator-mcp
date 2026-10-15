@@ -36,12 +36,19 @@ URL_FILENAME = "current_tunnel_url.txt"
 
 
 def find_workspace_root(start_path: Optional[str] = None) -> Path:
-    """Finds workspace root containing GEMINI.md or .git or defaults to cwd."""
-    p = Path(start_path or os.getcwd()).resolve()
-    for parent in [p] + list(p.parents):
-        if (parent / "GEMINI.md").exists() or (parent / ".agents").exists() or (parent / "pixi.toml").exists():
-            return parent
-    return p
+    """Finds workspace root containing .git, GEMINI.md, or defaults to cwd."""
+    if start_path:
+        p = Path(start_path).resolve()
+        if p.exists():
+            return p
+    cwd = Path(os.getcwd()).resolve()
+    home = Path.home().resolve()
+    for p in [cwd] + list(cwd.parents):
+        if p == home:
+            break
+        if (p / ".git").is_dir() or (p / "GEMINI.md").is_file() or (p / ".agents").is_dir() or (p / "pixi.toml").is_file():
+            return p
+    return cwd
 
 
 def get_state_paths(workspace_root: Path):

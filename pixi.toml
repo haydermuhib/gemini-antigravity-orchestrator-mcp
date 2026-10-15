@@ -1,6 +1,6 @@
 [workspace]
 name = "antigravity-mcp"
-version = "1.0.1"
+version = "1.0.2"
 description = "Antigravity MCP Orchestrator Server for Google Gemini & Antigravity IDE"
 authors = ["Haider"]
 channels = ["conda-forge"]
