@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ANTIGRAVITY MCP // GOOGLE GEMINI ORCHESTRATOR</title>
+  <link rel="icon" type="image/x-icon" href="branding/dist/favicon.ico">
+  <link rel="apple-touch-icon" href="branding/dist/apple-touch-icon.png">
+  <link rel="manifest" href="branding/dist/site.webmanifest">
+  <meta name="description" content="Arcade-grade Model Context Protocol server connecting Google Gemini to local Antigravity IDE workspaces across Linux, macOS, and Windows.">
+
+  <!-- Google Fonts: VT323 & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=VT323&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #09090b;
+      --bg-surface: #121216;
+      --bg-panel: #18181f;
+      --border-color: #27272a;
+      --red-primary: #dc2626;
+      --red-hover: #ef4444;
+      --red-glow: rgba(220, 38, 38, 0.35);
+      --text-main: #f4f4f5;
+      --text-muted: #a1a1aa;
+      --yellow-arcade: #facc15;
+      --cyan-arcade: #38bdf8;
+      --green-arcade: #22c55e;
+      --shadow-offset: 4px;
+    }
+
+    /* Custom Arcade Scrollbar */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    ::-webkit-scrollbar {
+      width: 12px;
+      height: 12px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #09090b;
+      border-left: 2px solid #18181f;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--red-primary);
+      border: 3px solid #09090b;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--red-hover);
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      font-family: 'JetBrains Mono', monospace;
+      line-height: 1.6;
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Subtle Arcade Scanline Background */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(
+        rgba(18, 16, 16, 0) 50%, 
+        rgba(0, 0, 0, 0.25) 50%
+      ), linear-gradient(
+        90deg,
+        rgba(255, 0, 0, 0.02),
+        rgba(0, 255, 0, 0.01),
+        rgba(0, 0, 255, 0.02)
+      );
+      background-size: 100% 4px, 6px 100%;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    /* Header Nav */
+    header {
+      background: #09090b;
+      border-bottom: 3px solid var(--red-primary);
+      padding: 16px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 0 #000;
+    }
+
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      border: 2px solid var(--red-primary);
+      box-shadow: 2px 2px 0 #000;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .brand-icon img {
+      width: 32px;
+      height: 32px;
+    }
+
+    .brand-title {
+      font-family: 'VT323', monospace;
+      font-size: 32px;
+      line-height: 1;
+      letter-spacing: 1px;
+      color: #fff;
+    }
+
+    .brand-title span {
+      color: var(--red-primary);
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    /* SEGA Chunky Arcade Buttons */
+    .arcade-btn {
+      font-family: 'VT323', monospace;
+      font-size: 22px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 8px 20px;
+      cursor: pointer;
+      border: 2px solid #000;
+      background: var(--red-primary);
+      color: #fff;
+      box-shadow: var(--shadow-offset) var(--shadow-offset) 0 #000;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: transform 0.05s ease, box-shadow 0.05s ease, background 0.1s ease;
+      user-select: none;
+    }
+
+    .arcade-btn:hover {
+      background: var(--red-hover);
+    }
+
+    .arcade-btn:active {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0 #000;
+    }
+
+    .arcade-btn-secondary {
+      background: #18181f;
+      border-color: #3f3f46;
+      color: #f4f4f5;
+    }
+    .arcade-btn-secondary:hover {
+      background: #27272a;
+      border-color: var(--red-primary);
+    }
+
+    .arcade-btn-install {
+      background: var(--yellow-arcade);
+      color: #000;
+      font-weight: bold;
+    }
+    .arcade-btn-install:hover {
+      background: #fde047;
+    }
+
+    /* Main Container */
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 24px;
+      flex: 1;
+      width: 100%;
+    }
+
+    /* Hero Section */
+    .hero {
+      border: 3px solid #000;
+      background: var(--bg-surface);
+      box-shadow: 6px 6px 0 var(--red-primary);
+      padding: 48px 36px;
+      margin-bottom: 48px;
+      position: relative;
+    }
+
+    .badge-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .arcade-badge {
+      font-family: 'VT323', monospace;
+      font-size: 18px;
+      background: #000;
+      border: 1px solid #3f3f46;
+      color: var(--yellow-arcade);
+      padding: 2px 10px;
+      box-shadow: 2px 2px 0 #000;
+    }
+
+    .hero-title {
+      font-family: 'VT323', monospace;
+      font-size: 64px;
+      line-height: 0.95;
+      color: #fff;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .hero-title span {
+      color: var(--red-primary);
+      text-shadow: 2px 2px 0 #000;
+    }
+
+    .hero-subtitle {
+      font-size: 16px;
+      color: var(--text-muted);
+      max-width: 780px;
+      margin-bottom: 32px;
+    }
+
+    /* Installation Command Box */
+    .install-box {
+      background: #09090b;
+      border: 2px solid #27272a;
+      box-shadow: 4px 4px 0 #000;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    .install-cmd {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 15px;
+      color: var(--green-arcade);
+      word-break: break-all;
+    }
+
+    .install-cmd span {
+      color: var(--text-muted);
+      user-select: none;
+    }
+
+    .copy-btn {
+      font-family: 'VT323', monospace;
+      font-size: 20px;
+      padding: 6px 16px;
+      background: var(--red-primary);
+      color: #fff;
+      border: 1px solid #000;
+      box-shadow: 2px 2px 0 #000;
+      cursor: pointer;
+      user-select: none;
+    }
+    .copy-btn:active {
+      transform: translate(1px, 1px);
+      box-shadow: 1px 1px 0 #000;
+    }
+
+    /* Direct Action Buttons */
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+    }
+
+    /* Arcade Stats Strip */
+    .arcade-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+
+    .stat-card {
+      background: var(--bg-surface);
+      border: 2px solid #27272a;
+      box-shadow: 4px 4px 0 #000;
+      padding: 20px;
+      border-left: 6px solid var(--red-primary);
+    }
+
+    .stat-num {
+      font-family: 'VT323', monospace;
+      font-size: 44px;
+      line-height: 1;
+      color: #fff;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Section Headings */
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 12px;
+      margin-bottom: 24px;
+    }
+
+    .section-title {
+      font-family: 'VT323', monospace;
+      font-size: 38px;
+      text-transform: uppercase;
+      color: #fff;
+      letter-spacing: 1px;
+    }
+
+    .section-title span {
+      color: var(--red-primary);
+    }
+
+    /* Arcade Tool Cabinet Grid */
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+
+    .tool-card {
+      background: var(--bg-surface);
+      border: 2px solid #27272a;
+      box-shadow: 4px 4px 0 #000;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: border-color 0.1s ease;
+    }
+
+    .tool-card:hover {
+      border-color: var(--red-primary);
+    }
+
+    .tool-name {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--yellow-arcade);
+      margin-bottom: 8px;
+      word-break: break-all;
+    }
+
+    .tool-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Terminal Simulator */
+    .terminal-window {
+      background: #000;
+      border: 3px solid var(--red-primary);
+      box-shadow: 6px 6px 0 #000;
+      margin-bottom: 48px;
+    }
+
+    .terminal-topbar {
+      background: #18181f;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid #27272a;
+    }
+
+    .terminal-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      background: #3f3f46;
+    }
+    .dot.red { background: var(--red-primary); }
+    .dot.yellow { background: var(--yellow-arcade); }
+    .dot.green { background: var(--green-arcade); }
+
+    .terminal-title {
+      font-family: 'VT323', monospace;
+      font-size: 20px;
+      color: #a1a1aa;
+    }
+
+    .terminal-body {
+      padding: 24px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      line-height: 1.7;
+      color: #f4f4f5;
+      overflow-x: auto;
+    }
+
+    .term-line-green { color: var(--green-arcade); }
+    .term-line-cyan { color: var(--cyan-arcade); }
+    .term-line-yellow { color: var(--yellow-arcade); }
+    .term-line-red { color: var(--red-primary); }
+    .term-muted { color: #71717a; }
+
+    /* Footer */
+    footer {
+      background: #09090b;
+      border-top: 2px solid var(--border-color);
+      padding: 32px 24px;
+      margin-top: auto;
+    }
+
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-meta {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 16px;
+    }
+
+    .footer-links a {
+      color: var(--text-main);
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .footer-links a:hover {
+      color: var(--red-primary);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero {
+        padding: 28px 20px;
+      }
+      .hero-title {
+        font-size: 44px;
+      }
+      .section-title {
+        font-size: 30px;
+      }
+      .nav-container {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .nav-actions {
+        width: 100%;
+        justify-content: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <header>
+    <div class="nav-container">
+      <a href="#" class="brand">
+        <div class="brand-icon">
+          <img src="branding/dist/favicon.svg" alt="Antigravity Icon">
+        </div>
+        <div class="brand-title">ANTIGRAVITY <span>MCP</span></div>
+      </a>
+      <div class="nav-actions">
+        <a href="#install" class="arcade-btn arcade-btn-install">INSTALL SCRIPT</a>
+        <a href="https://github.com/haydermuhib/gemini-antigravity-orchestrator-mcp" target="_blank" rel="noopener" class="arcade-btn arcade-btn-secondary">GITHUB REPO</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="badge-bar">
+        <span class="arcade-badge">PROTOCOL: MCP 2024-11-05</span>
+        <span class="arcade-badge">GEMINI CLOUD COMPATIBLE</span>
+        <span class="arcade-badge">PYTHON 3.10+ STD-LIB</span>
+        <span class="arcade-badge">LINUX // MACOS // WINDOWS</span>
+      </div>
+
+      <h1 class="hero-title">ORCHESTRATE YOUR <span>ANTIGRAVITY IDE</span> FROM GOOGLE GEMINI</h1>
+      <p class="hero-subtitle">
+        A Model Context Protocol server that bridges Google Gemini Connected Apps (HTTPS / SSE) and local desktop clients directly to your development workstation. Inspect 160+ skills, run commands, and browse plugins with zero external dependencies.
+      </p>
+
+      <!-- One-line Install Box -->
+      <div class="install-box" id="install">
+        <div class="install-cmd">
+          <span>$ </span>curl -fsSL https://raw.githubusercontent.com/haydermuhib/gemini-antigravity-orchestrator-mcp/main/install.sh | bash
+        </div>
+        <button class="copy-btn" id="copyBtn" onclick="copyInstallCmd()">COPY CMD</button>
+      </div>
+
+      <div class="hero-actions">
+        <!-- Direct Protocol Scheme Links for Desktop and Web -->
+        <a href="https://gemini.google.com" target="_blank" rel="noopener" class="arcade-btn">CONNECT GEMINI SPARK</a>
+        <a href="#cabinet" class="arcade-btn arcade-btn-secondary">VIEW 18 TOOLS</a>
+        <a href="#terminal" class="arcade-btn arcade-btn-secondary">TEST TERMINAL</a>
+      </div>
+    </section>
+
+    <!-- Stats Strip -->
+    <div class="arcade-stats">
+      <div class="stat-card">
+        <div class="stat-num">18</div>
+        <div class="stat-label">Production Tools</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">160+</div>
+        <div class="stat-label">Discovered Skills</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">0</div>
+        <div class="stat-label">External Dependencies</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">3</div>
+        <div class="stat-label">Supported Transports (SSE, POST, Stdio)</div>
+      </div>
+    </div>
+
+    <!-- Terminal Simulator -->
+    <section id="terminal">
+      <div class="section-header">
+        <h2 class="section-title">TERMINAL // <span>HANDSHAKE SIMULATOR</span></h2>
+        <span class="arcade-badge">SYS: ONLINE</span>
+      </div>
+
+      <div class="terminal-window">
+        <div class="terminal-topbar">
+          <div class="terminal-dots">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+          </div>
+          <div class="terminal-title">antigravity-mcp-daemon --tunnel</div>
+          <div style="font-size: 12px; color: #71717a;">PORT: 8080</div>
+        </div>
+        <div class="terminal-body">
+          <p><span class="term-muted">[23:42:01]</span> <span class="term-line-green">[INFO]</span> Starting Antigravity HTTP/SSE Server on 127.0.0.1:8080</p>
+          <p><span class="term-muted">[23:42:02]</span> <span class="term-line-green">[OK]</span> Engine loaded: 165 skills, 3 plugins, 2 active rules detected</p>
+          <p><span class="term-muted">[23:42:03]</span> <span class="term-line-cyan">[TUNNEL]</span> Cloudflare Quick Tunnel initialized</p>
+          <p><span class="term-muted">[23:42:03]</span> <span class="term-line-yellow">[PUBLIC URL]</span> <strong style="color: #fff;">https://antigravity-bridge.trycloudflare.com/sse</strong></p>
+          <p><span class="term-muted">[23:42:08]</span> <span class="term-line-green">[HANDSHAKE]</span> HEAD /sse probe received from Google Gemini Connected Apps (200 OK)</p>
+          <p><span class="term-muted">[23:42:09]</span> <span class="term-line-green">[OAUTH]</span> RFC 9728 metadata resolved: Bearer token granted</p>
+          <p><span class="term-muted">[23:42:10]</span> <span class="term-line-cyan">[ACTIVE]</span> Session established: Model is orchestrating workspace tasks</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tools Cabinet -->
+    <section id="cabinet">
+      <div class="section-header">
+        <h2 class="section-title">TOOL CABINET // <span>18 INTERFACES</span></h2>
+        <span class="arcade-badge">SELECT TO INSPECT</span>
+      </div>
+
+      <div class="tools-grid">
+        <div class="tool-card">
+          <div class="tool-name">get_antigravity_status</div>
+          <div class="tool-desc">Returns active workspace, connected tools, system info, and runtime health.</div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-name">list_known_workspaces</div>
+          <div class="tool-desc">Discovers all project directories on the machine and marks the active target.</div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-name">set_active_workspace</div>
+          <div class="tool-desc">Switches active workspace to another project directory at runtime without reboot.</div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-name">list_skills</div>
+          <div class="tool-desc">Queries 160+ skills across workspace, global, builtin, and plugin namespaces.</div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-name">get_skill</div>
+          <div class="tool-desc">Fetches full markdown instructions, YAML metadata, and file structure for a skill.</div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-name">search_skills</div>
+          <div class="tool-desc">Natural language keyword matching to locate the best workflow skill for a task.</div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-name">list_plugins</div>
+          <div class="tool-desc">Inspects installed plugin bundles, manifest specifications, and subagent rosters.</div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-name">get_plugin_details</div>
+          <div class="tool-desc">Retrieves detailed schemas, hooks, rules, and subagent configs of a plugin.</div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-name">list_rules</div>
+          <div class="tool-desc">Discovers project rules in GEMINI.md, AGENTS.md, and .agents/rules/*.md.</div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-name">get_rule</div>
+          <div class="tool-desc">Reads rule content and evaluates enforcement triggers (always_on vs model_decision).</div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-name">list_conversations</div>
+          <div class="tool-desc">Indexes recent session IDs, timestamps, and conversation artifact counts.</div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-name">get_conversation_transcript</div>
+          <div class="tool-desc">Reads user inputs, model replies, and tool steps from transcript.jsonl.</div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-name">list_artifacts</div>
+          <div class="tool-desc">Enumerates generated markdown plans, design notes, and code diffs in the brain.</div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-name">read_artifact</div>
+          <div class="tool-desc">Retrieves the complete content of any artifact stored in the agent brain.</div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-name">execute_workspace_command</div>
+          <div class="tool-desc">Runs shell commands with timeout guards, capturing stdout, stderr, and exit codes.</div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-name">create_workspace_skill</div>
+          <div class="tool-desc">Scaffolds standard Antigravity skill directories with YAML frontmatter.</div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-name">create_workspace_rule</div>
+          <div class="tool-desc">Authors or updates persistent agent directives in workspace or global config.</div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-name">orchestrate_agent_workflow</div>
+          <div class="tool-desc">Synthesizes user requests into step-by-step plans bound to specialized skills.</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-container">
+      <div class="footer-meta">
+        ANTIGRAVITY MCP // OPEN-SOURCE UNDER MIT LICENSE
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com/haydermuhib/gemini-antigravity-orchestrator-mcp" target="_blank" rel="noopener">GITHUB</a>
+        <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener">MCP SPEC</a>
+        <a href="https://gemini.google.com" target="_blank" rel="noopener">GEMINI</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function copyInstallCmd() {
+      const cmd = "curl -fsSL https://raw.githubusercontent.com/haydermuhib/gemini-antigravity-orchestrator-mcp/main/install.sh | bash";
+      navigator.clipboard.writeText(cmd).then(() => {
+        const btn = document.getElementById('copyBtn');
+        const orig = btn.innerText;
+        btn.innerText = "COPIED!";
+        btn.style.background = "#22c55e";
+        setTimeout(() => {
+          btn.innerText = orig;
+          btn.style.background = "";
+        }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>

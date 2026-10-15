@@ -163,7 +163,13 @@ class MCPHttpHandler(BaseHTTPRequestHandler):
             self._handle_sse(parsed)
             return
 
-        # 6. Health / Root info endpoint
+        # 6. Landing Page / Root info endpoint
+        index_file = Path(__file__).resolve().parent.parent / "index.html"
+        accept = self.headers.get("Accept", "")
+        if index_file.is_file() and ("text/html" in accept or "application/xhtml+xml" in accept):
+            self._serve_static_file(index_file, "text/html; charset=utf-8")
+            return
+
         host = self.headers.get("Host", "localhost:8080")
         proto = "https" if "trycloudflare.com" in host or self.headers.get("X-Forwarded-Proto") == "https" else "http"
         base = f"{proto}://{host}"
