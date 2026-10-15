@@ -1,15 +1,28 @@
-<p align="center">
+<div align="center">
   <img src="branding/dist/logo-lockup.png" width="520" alt="Antigravity MCP Orchestrator" />
-</p>
 
-# Antigravity MCP Orchestrator
+  <h1>Antigravity MCP Orchestrator</h1>
 
-Model Context Protocol (MCP) server that connects Google Gemini (Gemini Spark, Web, and Connected Apps) and local MCP clients to Google Antigravity IDE. Works on Linux, macOS, and Windows.
+  <p>
+    <strong>Model Context Protocol (MCP) server connecting Google Gemini and local workflows to Google Antigravity IDE.</strong><br />
+    Works on Linux, macOS, and Windows with zero external Python dependencies.
+  </p>
 
-[![MCP Protocol](https://img.shields.io/badge/MCP-2024--11--05-blue.svg)](https://modelcontextprotocol.io)
-[![Python](https://img.shields.io/badge/Python-3.10%2B-brightgreen.svg)](https://python.org)
-[![Platforms](https://img.shields.io/badge/Platforms-Linux%20%7C%20macOS%20%7C%20Windows-blue.svg)](https://github.com/haydermuhib/gemini-antigravity-orchestrator-mcp)
-[![License](https://img.shields.io/badge/License-MIT-purple.svg)](LICENSE)
+  <p>
+    <a href="https://modelcontextprotocol.io"><img src="https://img.shields.io/badge/MCP-2024--11--05-blue.svg" alt="MCP Protocol" /></a>
+    <a href="https://python.org"><img src="https://img.shields.io/badge/Python-3.10%2B-brightgreen.svg" alt="Python" /></a>
+    <a href="https://github.com/haydermuhib/gemini-antigravity-orchestrator-mcp"><img src="https://img.shields.io/badge/Platforms-Linux%20%7C%20macOS%20%7C%20Windows-blue.svg" alt="Platforms" /></a>
+    <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-purple.svg" alt="License" /></a>
+  </p>
+
+  <p>
+    <a href="#quick-start">Quick Start</a> &bull;
+    <a href="#overview">Overview</a> &bull;
+    <a href="#connecting-to-google-gemini-connected-apps">Gemini Setup</a> &bull;
+    <a href="#available-tools">Tools (18)</a> &bull;
+    <a href="branding/dist/antigravity-mcp-brand-kit.zip">Brand Kit (ZIP)</a>
+  </p>
+</div>
 
 ---
 
