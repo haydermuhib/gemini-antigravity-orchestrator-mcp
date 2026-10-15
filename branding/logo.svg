@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <title>Antigravity MCP Orchestrator</title>
+  <!-- Outer Jet Black Canopy -->
+  <path d="M 128 36 L 216 216 L 176 216 L 128 112 L 80 216 L 40 216 Z" fill="#0A0A0A"/>
+  <!-- Levitating Vivid Red Core Spark -->
+  <path d="M 128 132 L 150 170.1 L 128 208.2 L 106 170.1 Z" fill="#DC2626"/>
+</svg>
