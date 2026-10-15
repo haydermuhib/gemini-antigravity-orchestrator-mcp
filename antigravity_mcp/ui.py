@@ -13,7 +13,20 @@ from typing import Optional, List
 
 def is_tty() -> bool:
     """Returns True if stdout is an interactive terminal and TERM is not dumb."""
-    return sys.stdout.isatty() and os.environ.get("TERM", "") != "dumb"
+    if not sys.stdout.isatty() or os.environ.get("TERM", "") == "dumb":
+        return False
+    if sys.platform == "win32":
+        try:
+            import ctypes
+            kernel32 = ctypes.windll.kernel32
+            handle = kernel32.GetStdHandle(-11)  # STD_OUTPUT_HANDLE
+            mode = ctypes.c_ulong()
+            if kernel32.GetConsoleMode(handle, ctypes.byref(mode)):
+                kernel32.SetConsoleMode(handle, mode.value | 0x0004)  # ENABLE_VIRTUAL_TERMINAL_PROCESSING
+                return True
+        except Exception:
+            return os.environ.get("WT_SESSION") is not None
+    return True
 
 
 class Color:

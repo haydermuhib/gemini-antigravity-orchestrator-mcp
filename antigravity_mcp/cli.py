@@ -51,6 +51,21 @@ def get_state_paths(workspace_root: Path):
     }
 
 
+def rotate_log_if_needed(log_path: Path, max_bytes: int = 5 * 1024 * 1024, backup_count: int = 2):
+    """Rotates log file if it exceeds max_bytes to prevent unbounded disk growth."""
+    try:
+        if log_path.exists() and log_path.stat().st_size >= max_bytes:
+            for i in range(backup_count - 1, 0, -1):
+                s = log_path.with_name(f"{log_path.name}.{i}")
+                d = log_path.with_name(f"{log_path.name}.{i+1}")
+                if s.exists():
+                    s.replace(d)
+            backup = log_path.with_name(f"{log_path.name}.1")
+            log_path.replace(backup)
+    except Exception:
+        pass
+
+
 def is_process_alive(pid: int) -> bool:
     try:
         os.kill(pid, 0)
@@ -173,6 +188,7 @@ def cmd_start(workspace_root: Path, port: int = 8080):
     spinner = Spinner("Spawning background MCP server daemon...")
     spinner.start()
 
+    rotate_log_if_needed(paths["log"])
     log_file = open(paths["log"], "a", encoding="utf-8")
     cli_cmd = [
         sys.executable,
