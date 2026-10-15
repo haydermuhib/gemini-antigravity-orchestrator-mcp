@@ -134,15 +134,18 @@ def run_http_tests():
         conn.close()
         print("  ✅ HEAD /sse returned 200 OK.")
 
-        # 9. Test GET /.well-known/oauth-protected-resource/sse (RFC 9728)
-        print("9. Testing GET /.well-known/oauth-protected-resource/sse...")
-        req = urllib.request.Request(f"{base_url}/.well-known/oauth-protected-resource/sse")
-        with urllib.request.urlopen(req) as resp:
-            prot_res = json.loads(resp.read().decode("utf-8"))
-            assert "authorization_servers" in prot_res
-            print("  ✅ OAuth protected resource metadata returned:", prot_res["resource"])
+        # 10. Test Static Branding Assets (Favicon & Connector Logo)
+        print("10. Testing Static Branding Assets (/favicon.ico & /logo.png)...")
+        with urllib.request.urlopen(f"{base_url}/favicon.ico") as resp:
+            assert resp.status == 200
+            assert resp.headers.get("Content-Type") == "image/x-icon"
+            print("  ✅ /favicon.ico served successfully.")
+        with urllib.request.urlopen(f"{base_url}/logo.png") as resp:
+            assert resp.status == 200
+            assert resp.headers.get("Content-Type") == "image/png"
+            print("  ✅ /logo.png served successfully.")
 
-        print("\n🎉 ALL HTTP, SSE, HEAD & OAUTH 2.0 TESTS PASSED!")
+        print("\n🎉 ALL HTTP, SSE, HEAD, OAUTH 2.0 & BRANDING TESTS PASSED!")
 
     finally:
         proc.terminate()

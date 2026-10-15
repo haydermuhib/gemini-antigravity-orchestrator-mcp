@@ -1,10 +1,17 @@
-# 🛸 Antigravity MCP Server for Google Gemini (Connected Apps & Orchestration)
+<p align="center">
+  <img src="branding/dist/antigravity-mcp-app-icon-512.png" width="130" alt="Antigravity MCP Logo" />
+</p>
 
-[![MCP Protocol](https://img.shields.io/badge/MCP-2024--11--05-blue.svg)](https://modelcontextprotocol.io)
-[![Python](https://img.shields.io/badge/Python-3.10%2B-brightgreen.svg)](https://python.org)
-[![Pixi](https://img.shields.io/badge/Package_Manager-Pixi-yellow.svg)](https://pixi.sh)
-[![Platform](https://img.shields.io/badge/Platform-Linux-orange.svg)](https://kernel.org)
-[![License](https://img.shields.io/badge/License-MIT-purple.svg)](LICENSE)
+<h1 align="center">Antigravity MCP Orchestrator</h1>
+<p align="center"><strong>Production-Grade Model Context Protocol Server for Google Gemini & Antigravity IDE</strong></p>
+
+<p align="center">
+  <a href="https://modelcontextprotocol.io"><img src="https://img.shields.io/badge/MCP-2024--11--05-blue.svg" alt="MCP Protocol" /></a>
+  <a href="https://python.org"><img src="https://img.shields.io/badge/Python-3.10%2B-brightgreen.svg" alt="Python" /></a>
+  <a href="https://pixi.sh"><img src="https://img.shields.io/badge/Package_Manager-Pixi-yellow.svg" alt="Pixi" /></a>
+  <a href="https://kernel.org"><img src="https://img.shields.io/badge/Platform-Linux-orange.svg" alt="Platform" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-purple.svg" alt="License" /></a>
+</p>
 
 A production-grade **Model Context Protocol (MCP)** server specifically engineered for **Google Gemini Connected Apps** (which connects over a public `https://` URL without passwords), local **Google Antigravity IDE**, and other MCP clients.
 

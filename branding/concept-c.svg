@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <title>The Gravity Inverter</title>
+  <!-- Left Pylon -->
+  <path d="M 72 56 C 52 94 48 154 64 208 C 84 200 98 164 98 124 C 98 88 88 68 72 56 Z" fill="#111827"/>
+  <!-- Right Pylon -->
+  <path d="M 184 56 C 204 94 208 154 192 208 C 172 200 158 164 158 124 C 158 88 168 68 184 56 Z" fill="#111827"/>
+  <!-- Central Levitating Node -->
+  <circle cx="128" cy="124" r="24" fill="#111827"/>
+  <!-- Top Spark Tip -->
+  <path d="M 128 44 L 138 68 L 128 92 L 118 68 Z" fill="#111827"/>
+</svg>

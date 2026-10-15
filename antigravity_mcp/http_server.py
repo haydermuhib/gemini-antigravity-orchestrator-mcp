@@ -18,6 +18,7 @@ import logging
 import threading
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
+from pathlib import Path
 from typing import Dict, Any, Optional
 
 from .antigravity_engine import AntigravityEngine
@@ -91,10 +92,41 @@ class MCPHttpHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(payload)
 
+    def _serve_static_file(self, filepath: Path, content_type: str):
+        if not filepath.is_file():
+            self._send_json_response(404, {"error": "Asset not found"})
+            return
+        data = filepath.read_bytes()
+        self.send_response(200)
+        self.send_header("Content-Type", content_type)
+        self.send_header("Content-Length", str(len(data)))
+        self.send_header("Cache-Control", "public, max-age=86400")
+        self._send_cors_headers()
+        self.end_headers()
+        self.wfile.write(data)
+
     def do_GET(self):
         parsed = urlparse(self.path)
         path = parsed.path.rstrip("/")
         query = parse_qs(parsed.query)
+
+        # 0. Static Branding & Connector Assets
+        branding_dir = Path(__file__).resolve().parent.parent / "branding" / "dist"
+        if path in ("/favicon.ico",):
+            self._serve_static_file(branding_dir / "favicon.ico", "image/x-icon")
+            return
+        if path in ("/logo.png", "/icon.png", "/icon-512.png", "/icon-192.png"):
+            self._serve_static_file(branding_dir / "antigravity-mcp-app-icon-512.png", "image/png")
+            return
+        if path in ("/apple-touch-icon.png",):
+            self._serve_static_file(branding_dir / "apple-touch-icon.png", "image/png")
+            return
+        if path in ("/logo.svg", "/favicon.svg"):
+            self._serve_static_file(branding_dir / "favicon.svg", "image/svg+xml")
+            return
+        if path in ("/site.webmanifest", "/manifest.json"):
+            self._serve_static_file(branding_dir / "site.webmanifest", "application/manifest+json")
+            return
 
         # 1. OAuth 2.0 Protected Resource Metadata (RFC 9728)
         if path.startswith("/.well-known/oauth-protected-resource"):
@@ -132,11 +164,16 @@ class MCPHttpHandler(BaseHTTPRequestHandler):
             return
 
         # 6. Health / Root info endpoint
+        host = self.headers.get("Host", "localhost:8080")
+        proto = "https" if "trycloudflare.com" in host or self.headers.get("X-Forwarded-Proto") == "https" else "http"
+        base = f"{proto}://{host}"
         status = self.engine.get_ide_status()
         info = {
             "name": "Antigravity MCP Server for Google Gemini",
             "status": "online",
             "version": "1.0.0",
+            "logo_uri": f"{base}/logo.png",
+            "icon_uri": f"{base}/icon.png",
             "transport": "HTTP / Server-Sent Events (SSE)",
             "oauth": {
                 "supported": True,
@@ -159,7 +196,9 @@ class MCPHttpHandler(BaseHTTPRequestHandler):
         data = {
             "resource": f"{base}/sse",
             "authorization_servers": [base],
-            "scopes_supported": ["mcp:all"]
+            "scopes_supported": ["mcp:all"],
+            "logo_uri": f"{base}/logo.png",
+            "icon_uri": f"{base}/icon.png"
         }
         self._send_json_response(200, data)
 
@@ -176,7 +215,10 @@ class MCPHttpHandler(BaseHTTPRequestHandler):
             "jwks_uri": f"{base}/oauth/jwks",
             "response_types_supported": ["code", "token"],
             "grant_types_supported": ["authorization_code", "client_credentials", "refresh_token"],
-            "token_endpoint_auth_methods_supported": ["client_secret_post", "client_secret_basic", "none"]
+            "token_endpoint_auth_methods_supported": ["client_secret_post", "client_secret_basic", "none"],
+            "logo_uri": f"{base}/logo.png",
+            "icon_uri": f"{base}/icon.png",
+            "service_documentation": "https://github.com/haydermuhib/gemini-antigravity-orchestrator-mcp"
         }
         self._send_json_response(200, discovery)
 

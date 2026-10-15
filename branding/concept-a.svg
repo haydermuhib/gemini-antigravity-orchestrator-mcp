@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <title>The Levitation Spark</title>
+  <!-- Gemini Spark (Floating Core) -->
+  <path d="M 128 36 C 128 66 142 80 172 80 C 142 80 128 94 128 124 C 128 94 114 80 84 80 C 114 80 128 66 128 36 Z" fill="#111827"/>
+  <!-- Antigravity Magnetic Cradle -->
+  <path d="M 44 140 C 60 196 90 220 128 220 C 166 220 196 196 212 140 C 196 150 168 188 128 188 C 88 188 60 150 44 140 Z" fill="#111827"/>
+</svg>
