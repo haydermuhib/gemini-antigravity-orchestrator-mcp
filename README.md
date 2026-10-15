@@ -137,7 +137,25 @@ python server.py --tunnel
 
 ## Local Antigravity IDE Configuration (Stdio)
 
-To run the server locally inside Antigravity IDE without HTTP or tunnels, add the following to `~/.gemini/config/mcp_config.json`:
+To configure the server inside Google Antigravity IDE, Claude Desktop, or Cursor, add it to your `mcp_config.json`:
+
+### Option A: Direct PyPI Execution via `uvx` (No clone required)
+
+```json
+{
+  "mcpServers": {
+    "antigravity-orchestrator": {
+      "command": "uvx",
+      "args": [
+        "antigravity-mcp",
+        "--stdio"
+      ]
+    }
+  }
+}
+```
+
+### Option B: Local Source / Development
 
 ```json
 {
