@@ -164,6 +164,7 @@ def cmd_stop(workspace_root: Path):
             time.sleep(0.3)
 
         paths["pid"].unlink(missing_ok=True)
+        paths["url"].unlink(missing_ok=True)
         spinner.succeed(f"Antigravity MCP Server (PID: {pid}) stopped successfully.")
     except Exception as e:
         spinner.fail(f"Failed to stop process {pid}: {e}")
@@ -184,6 +185,9 @@ def cmd_start(workspace_root: Path, port: int = 8080):
                 return
         except Exception:
             pass
+
+    # Clear stale URL from previous sessions
+    paths["url"].unlink(missing_ok=True)
 
     spinner = Spinner("Spawning background MCP server daemon...")
     spinner.start()
@@ -216,7 +220,7 @@ def cmd_start(workspace_root: Path, port: int = 8080):
     tunnel_spinner.start()
 
     tunnel_url = None
-    for _ in range(35):
+    for _ in range(40):
         time.sleep(0.5)
         if paths["url"].exists():
             candidate = paths["url"].read_text().strip()
@@ -225,13 +229,14 @@ def cmd_start(workspace_root: Path, port: int = 8080):
                 break
         if paths["log"].exists():
             try:
-                content = paths["log"].read_text()
-                if "trycloudflare.com" in content:
-                    for part in content.split():
-                        if part.startswith("https://") and "trycloudflare.com" in part and not "api." in part:
-                            tunnel_url = part.strip()
-                            paths["url"].write_text(tunnel_url)
-                            break
+                lines = paths["log"].read_text().splitlines()
+                for line in reversed(lines[-20:]):
+                    if "trycloudflare.com" in line:
+                        for part in line.split():
+                            if part.startswith("https://") and "trycloudflare.com" in part and not "api." in part:
+                                tunnel_url = part.strip()
+                                paths["url"].write_text(tunnel_url)
+                                break
                     if tunnel_url:
                         break
             except Exception:
