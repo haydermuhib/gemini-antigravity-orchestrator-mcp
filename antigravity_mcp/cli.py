@@ -28,6 +28,7 @@ from .ui import (
 )
 from .server import MCPServer
 from .http_server import start_http_server
+from . import __version__
 
 PID_FILENAME = ".server.pid"
 LOG_FILENAME = "mcp_server.log"
@@ -77,7 +78,7 @@ def is_process_alive(pid: int) -> bool:
 def cmd_status(workspace_root: Path):
     """Renders a modern, structured TUI diagnostic status card."""
     paths = get_state_paths(workspace_root)
-    render_banner("1.0.0")
+    render_banner(__version__)
 
     pid = None
     running = False
@@ -131,7 +132,7 @@ def cmd_status(workspace_root: Path):
 def cmd_stop(workspace_root: Path):
     """Gracefully terminates the background daemon with in-place spinner."""
     paths = get_state_paths(workspace_root)
-    render_banner("1.0.0")
+    render_banner(__version__)
 
     if not paths["pid"].exists():
         print(f"{Color.GRAY}No active daemon PID file found at {paths['pid']}{Color.RESET}")
@@ -160,7 +161,8 @@ def cmd_stop(workspace_root: Path):
             time.sleep(0.2)
 
         if is_process_alive(pid):
-            os.kill(pid, signal.SIGKILL)
+            sigkill = getattr(signal, "SIGKILL", signal.SIGTERM)
+            os.kill(pid, sigkill)
             time.sleep(0.3)
 
         paths["pid"].unlink(missing_ok=True)
@@ -173,7 +175,7 @@ def cmd_stop(workspace_root: Path):
 def cmd_start(workspace_root: Path, port: int = 8080):
     """Launches the server in daemon mode with in-place progress and health checks."""
     paths = get_state_paths(workspace_root)
-    render_banner("1.0.0")
+    render_banner(__version__)
 
     # Check if already running
     if paths["pid"].exists():
@@ -205,13 +207,18 @@ def cmd_start(workspace_root: Path, port: int = 8080):
         "--tunnel"
     ]
 
-    proc = subprocess.Popen(
-        cli_cmd,
-        stdout=log_file,
-        stderr=subprocess.STDOUT,
-        cwd=str(workspace_root),
-        start_new_session=True
-    )
+    popen_kwargs = {
+        "stdout": log_file,
+        "stderr": subprocess.STDOUT,
+        "cwd": str(workspace_root),
+    }
+    if sys.platform != "win32":
+        popen_kwargs["start_new_session"] = True
+    else:
+        # DETACHED_PROCESS = 0x00000008, CREATE_NEW_PROCESS_GROUP = 0x00000200
+        popen_kwargs["creationflags"] = 0x00000008 | 0x00000200
+
+    proc = subprocess.Popen(cli_cmd, **popen_kwargs)
     paths["pid"].write_text(str(proc.pid))
     spinner.succeed(f"Server daemon spawned (PID: {proc.pid})")
 
@@ -357,7 +364,7 @@ def main():
     run_http = args.http or args.tunnel or (not args.stdio and sys.stdin.isatty())
 
     if run_http:
-        render_banner("1.0.0")
+        render_banner(__version__)
 
         # In-place spinner for initial workspace inspection
         with Spinner("Scanning workspace for Antigravity skills, rules, and plugins...") as sp:
