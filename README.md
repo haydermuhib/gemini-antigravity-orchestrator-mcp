@@ -1,148 +1,126 @@
 <p align="center">
-  <img src="branding/dist/antigravity-mcp-app-icon-512.png" width="130" alt="Antigravity MCP Logo" />
+  <img src="branding/dist/logo-lockup.png" width="520" alt="Antigravity MCP Orchestrator" />
 </p>
 
-<h1 align="center">Antigravity MCP Orchestrator</h1>
-<p align="center"><strong>Production-Grade Model Context Protocol Server for Google Gemini & Antigravity IDE</strong></p>
+# Antigravity MCP Orchestrator
 
-<p align="center">
-  <a href="https://modelcontextprotocol.io"><img src="https://img.shields.io/badge/MCP-2024--11--05-blue.svg" alt="MCP Protocol" /></a>
-  <a href="https://python.org"><img src="https://img.shields.io/badge/Python-3.10%2B-brightgreen.svg" alt="Python" /></a>
-  <a href="https://pixi.sh"><img src="https://img.shields.io/badge/Package_Manager-Pixi-yellow.svg" alt="Pixi" /></a>
-  <img src="https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-blue.svg" alt="Platforms" />
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-purple.svg" alt="License" /></a>
-</p>
+Model Context Protocol (MCP) server that connects Google Gemini (Gemini Spark, Web, and Connected Apps) and local MCP clients to Google Antigravity IDE. Works on Linux, macOS, and Windows.
 
-A production-grade **Model Context Protocol (MCP)** server specifically engineered for **Google Gemini Connected Apps** (which connects over a public `https://` URL without passwords), local **Google Antigravity IDE**, and other MCP clients. Works across **Linux, macOS, and Windows**.
-
-This server bridges cloud-based Gemini (Gemini Spark / Web / Advanced) directly to your local development environment, allowing Gemini to autonomously explore your codebase, discover 160+ specialized skills, inspect plugins and rules, view conversation transcripts, and execute workspace commands.
+[![MCP Protocol](https://img.shields.io/badge/MCP-2024--11--05-blue.svg)](https://modelcontextprotocol.io)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-brightgreen.svg)](https://python.org)
+[![Platforms](https://img.shields.io/badge/Platforms-Linux%20%7C%20macOS%20%7C%20Windows-blue.svg)](https://github.com/haydermuhib/gemini-antigravity-orchestrator-mcp)
+[![License](https://img.shields.io/badge/License-MIT-purple.svg)](LICENSE)
 
 ---
 
-## ⚡ Quick Start & Installation
+## Overview
 
-### Automatic Install (Linux, macOS, WSL)
+Google Gemini cloud services connect to external MCP servers over public HTTPS URLs. This server exposes an HTTP/SSE interface for Gemini while providing direct access to the local Antigravity IDE workspace, including:
 
-Clone the repository and run the automated installer:
+- Discovery and inspection of 160+ skills across workspace, global, and plugin scopes.
+- Inspection of plugins (`cursor-team-kit`, `pstack`, `ponytail`), rules (`GEMINI.md`, `AGENTS.md`), and transcripts.
+- Command execution within the active workspace directory.
+- Dynamic workspace switching at runtime (`set_active_workspace`) without server restarts.
+- Zero external Python dependencies: implemented with Python's standard library.
+
+---
+
+## Quick Start
+
+### Installation
+
+Clone the repository and run the setup script:
 
 ```bash
 git clone https://github.com/haydermuhib/gemini-antigravity-orchestrator-mcp.git
 cd gemini-antigravity-orchestrator-mcp
-
-# Run the installer
 chmod +x install.sh && ./install.sh
 ```
 
-The installer will:
-1. Validate Python (>=3.10) and check `cloudflared`.
-2. Install the global CLI command `antigravity-mcp` into `~/.local/bin`.
-3. Auto-register the server in Antigravity IDE's configuration (`~/.gemini/config/mcp_config.json`).
+The script verifies Python 3.10+, checks for `cloudflared`, installs the `antigravity-mcp` CLI into `~/.local/bin`, and registers the server with local Antigravity IDE configuration.
 
 ---
 
-### Prerequisites by Platform
+### Prerequisites
 
-#### 🐧 Linux
-- **Python**: `sudo apt install python3` (or `sudo pacman -S python`)
-- **Cloudflared**:
-  ```bash
-  # Debian/Ubuntu
-  sudo mkdir -p --mode=0755 /etc/apt/keyrings
-  curl -fsSL https://pkg.cloudflare.com/cloudflare-main.gpg | sudo tee /etc/apt/keyrings/cloudflare-main.gpg >/dev/null
-  echo 'deb [signed-by=/etc/apt/keyrings/cloudflare-main.gpg] https://pkg.cloudflare.com/cloudflared any main' | sudo tee /etc/apt/sources.list.d/cloudflared.list
-  sudo apt-get update && sudo apt-get install -y cloudflared
-  ```
-
-#### 🍎 macOS
-- **Python**: Installed by default or via `brew install python`
-- **Cloudflared**:
-  ```bash
-  brew install cloudflared
-  ```
-
-#### 🪟 Windows
-- Works natively with **WSL (Windows Subsystem for Linux)**, **Git Bash**, or **PowerShell**:
-- **Python**: Install from [python.org](https://python.org) or Microsoft Store (`winget install Python.Python.3.12`)
-- **Cloudflared**:
-  ```powershell
-  winget install --id Cloudflare.cloudflared
-  ```
-- In PowerShell or Command Prompt, run:
-  ```powershell
-  python server.py --tunnel
-  ```
+- **Python 3.10 or higher**
+- **Cloudflared** (creates the HTTPS tunnel for Gemini Connected Apps)
+  - **Linux**: `sudo apt install cloudflared` or download from [Cloudflare](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/get-started/create-local-tunnel/)
+  - **macOS**: `brew install cloudflared`
+  - **Windows**: `winget install Cloudflare.cloudflared`
 
 ---
 
-### Running the Server
+## Running the Server
 
-#### Option A: Background Daemon (Linux & macOS)
-Keeps the server and tunnel running continuously so **Gemini can orchestrate Antigravity IDE even when you close your terminal or step away**:
+### Background Service (Linux and macOS)
 
 ```bash
-# Start background daemon (HTTP server + Cloudflare tunnel)
-antigravity-mcp start    # or ./start_daemon.sh
+# Start background server and tunnel
+antigravity-mcp start   # or ./start_daemon.sh
 
-# View status & get your public Gemini HTTPS URL:
-antigravity-mcp status   # or ./status.sh
+# View status and retrieve the active public URL
+antigravity-mcp status  # or ./status.sh
 
-# Stop background daemon:
-antigravity-mcp stop     # or ./stop_daemon.sh
+# Stop background server
+antigravity-mcp stop    # or ./stop_daemon.sh
 ```
 
-#### Option B: Foreground with Pixi
+### Foreground Mode
+
+Using Pixi:
 ```bash
 pixi run tunnel
 ```
 
-#### Option C: Foreground with Vanilla Python
+Using standard Python:
 ```bash
-# Terminal 1: Start HTTP server
+# Terminal 1: run server on port 8080
 python3 server.py --http 8080
 
-# Terminal 2: Start Cloudflare tunnel
+# Terminal 2: open tunnel
 cloudflared tunnel --url http://127.0.0.1:8080
+```
+
+On Windows (Command Prompt or PowerShell):
+```powershell
+python server.py --tunnel
 ```
 
 ---
 
-## 🔗 Connecting to Google Gemini Connected Apps
+## Connecting to Google Gemini Connected Apps
 
-1. Start your server (via `./start_daemon.sh` or `pixi run tunnel`).
-2. Run `./status.sh` or copy the generated HTTPS URL from the terminal:
+1. Start the server using one of the methods above.
+2. Run `./status.sh` or copy the HTTPS tunnel URL:
    ```text
-   https://<random-subdomain>.trycloudflare.com/sse
+   https://<subdomain>.trycloudflare.com/sse
    ```
-3. Open **Google Gemini** (Gemini Spark / Web / Advanced) → **Settings** → **Connect to an MCP server** (or **Connected Apps**).
-4. Fill in the connection form:
-   - **MCP server URL**: `https://<random-subdomain>.trycloudflare.com/sse`
-   - **Client ID**: `gemini-client` *(or any identifier)*
-   - **Client secret**: `gemini-secret` *(or any string)*
-5. Click **Connect**.
-6. Google Gemini will perform the OAuth handshake, complete the verification, and display your Antigravity tools!
-
-> ℹ️ **Google's Redirect URI (`oauth-redirect.googleusercontent.com`)**:  
-> The redirect URI displayed in Google's UI is handled automatically by the server's OAuth authorization handler. No manual navigation or DNS configuration is needed.
+3. In Google Gemini, navigate to **Settings** > **Connected Apps** > **Connect to an MCP server**.
+4. Configure the connection fields:
+   - **MCP server URL**: `https://<subdomain>.trycloudflare.com/sse`
+   - **Client ID**: `gemini-client` (or any string)
+   - **Client secret**: `gemini-secret` (or any string)
+5. Click **Connect**. Gemini validates the endpoint and loads the tool catalog.
 
 ---
 
-## 🤖 Local Antigravity IDE Integration (Stdio)
+## Local Antigravity IDE Configuration (Stdio)
 
-To also use this MCP server directly inside your local **Antigravity IDE** alongside Gemini, register it in `~/.gemini/config/mcp_config.json`:
+To run the server locally inside Antigravity IDE without HTTP or tunnels, add the following to `~/.gemini/config/mcp_config.json`:
 
 ```json
 {
   "mcpServers": {
     "antigravity-orchestrator": {
-      "command": "pixi",
+      "command": "python3",
       "args": [
-        "run",
-        "--manifest-path",
-        "/path/to/your/repo/pixi.toml",
-        "python3",
-        "/path/to/your/repo/server.py",
+        "/path/to/gemini-antigravity-orchestrator-mcp/server.py",
         "--stdio"
       ],
+      "env": {
+        "PYTHONUNBUFFERED": "1"
+      },
       "disabled": false
     }
   }
@@ -151,56 +129,55 @@ To also use this MCP server directly inside your local **Antigravity IDE** along
 
 ---
 
-## 🛠️ Complete MCP Toolset (18 Tools)
+## Available Tools
+
+The server provides 18 tools to connected models:
 
 | Tool Name | Description | Key Arguments |
 | :--- | :--- | :--- |
-| `get_antigravity_status` | Returns IDE status, active workspace, total skills/plugins/rules counts, and system info. | None |
-| `list_known_workspaces` | Discovers and lists all development workspaces on the machine, showing which one is currently active. | None |
-| `set_active_workspace` | Dynamically switches the active workspace to another project directory at runtime. | `workspace_path` *(required)* |
-| `list_skills` | Discovers skills across all scopes (`all`, `workspace`, `global`, `builtin`, `plugins`). | `scope`, `plugin_filter` |
-| `get_skill` | Retrieves full `SKILL.md` instructions, YAML frontmatter, and file structure for a skill. | `skill_name` *(required)* |
-| `search_skills` | Searches skills using natural language keywords and ranked relevance matching. | `query` *(required)* |
-| `list_plugins` | Lists installed plugins, manifests (`plugin.json`), versions, authors, skills, and subagents. | None |
-| `get_plugin_details` | Returns full details of a plugin, its rules, hooks, and MCP configuration. | `plugin_name` *(required)* |
+| `get_antigravity_status` | Returns IDE status, workspace path, tool/rule counts, and runtime info. | None |
+| `list_known_workspaces` | Lists detected workspaces on the machine and shows which is active. | None |
+| `set_active_workspace` | Switches the active workspace to another project directory at runtime. | `workspace_path` (required) |
+| `list_skills` | Discovers skills across workspace, global, builtin, and plugin scopes. | `scope`, `plugin_filter` |
+| `get_skill` | Retrieves `SKILL.md` text and metadata for a given skill. | `skill_name` (required) |
+| `search_skills` | Searches skills using keyword matching. | `query` (required) |
+| `list_plugins` | Lists installed plugins, manifests, versions, and subagents. | None |
+| `get_plugin_details` | Returns full details of a plugin and its configuration. | `plugin_name` (required) |
 | `list_rules` | Discovers active rules in workspace and global settings. | None |
-| `get_rule` | Reads full content and trigger conditions (`always_on` / `model_decision`) of a rule. | `rule_identifier` *(required)* |
-| `list_conversations` | Lists recent conversation IDs, timestamps, and artifact counts in the brain. | None |
-| `get_conversation_transcript` | Reads recent steps, user inputs, planner responses, and tool calls from `transcript.jsonl`. | `conversation_id`, `limit` |
-| `list_artifacts` | Lists generated markdown reports, diffs, and plans in the conversation brain. | `conversation_id` |
-| `read_artifact` | Reads the markdown content of an artifact file. | `artifact_name_or_path` *(required)* |
-| `execute_workspace_command` | Executes shell commands in the workspace with stdout, stderr, and exit code capture. | `command` *(required)*, `cwd`, `timeout` |
-| `create_workspace_skill` | Scaffolds a new Antigravity skill with standard folder structure and YAML frontmatter. | `name`, `description`, `instructions`, `scope` |
-| `create_workspace_rule` | Creates or updates an Antigravity rule in `.agents/rules/` or global settings. | `filename`, `content`, `scope`, `trigger` |
-| `orchestrate_agent_workflow` | Formulates an end-to-end plan matching task intent with Antigravity skills and rules. | `task` *(required)*, `preferred_aesthetic` |
+| `get_rule` | Reads the content and trigger conditions of a rule. | `rule_identifier` (required) |
+| `list_conversations` | Lists recent conversation IDs and brain artifacts. | None |
+| `get_conversation_transcript` | Reads recent steps, user inputs, and tool calls from `transcript.jsonl`. | `conversation_id`, `limit` |
+| `list_artifacts` | Lists markdown reports and diffs in the conversation brain. | `conversation_id` |
+| `read_artifact` | Reads the markdown content of an artifact file. | `artifact_name_or_path` (required) |
+| `execute_workspace_command` | Executes shell commands in the workspace with exit code, stdout, and stderr. | `command` (required), `cwd`, `timeout` |
+| `create_workspace_skill` | Scaffolds a new Antigravity skill directory and `SKILL.md`. | `name`, `description`, `instructions`, `scope` |
+| `create_workspace_rule` | Creates or updates an Antigravity rule in `.agents/rules/`. | `filename`, `content`, `scope`, `trigger` |
+| `orchestrate_agent_workflow` | Generates an execution plan matching task intent with skills and rules. | `task` (required), `preferred_aesthetic` |
 
 ---
 
-## 📡 Remote Transport Support
+## Protocol Transports
 
-This server supports both official Model Context Protocol transport specifications:
-1. **Server-Sent Events (SSE)**: `GET /sse` + `POST /message?sessionId=<uuid>`
-2. **Streamable HTTP POST**: `POST /` or `POST /mcp` (Dual delivery with full CORS support)
-3. **Stdio Protocol**: `python3 server.py --stdio` (for local IDEs, Claude Desktop, Cursor, and CLI harnesses)
+1. **Server-Sent Events (SSE)**: `GET /sse` and `POST /message?sessionId=<id>`
+2. **Streamable HTTP POST**: `POST /` and `POST /mcp`
+3. **Stdio Protocol**: `python3 server.py --stdio`
 
 ---
 
-## 🧪 Testing
+## Testing
 
-Run both automated test suites to verify functionality before deploying:
+Run the automated test suites:
 
 ```bash
-# Test HTTP, SSE, OAuth, HEAD pre-flight, and CORS:
-pixi run test-http
-# or: python3 test_http_mcp.py
+# HTTP, SSE, OAuth, HEAD pre-flight, and static asset tests
+python3 test_http_mcp.py
 
-# Test Stdio JSON-RPC 2.0 protocol and all 18 tools:
-pixi run test
-# or: python3 test_mcp.py
+# Stdio JSON-RPC 2.0 protocol and 18-tool verification
+python3 test_mcp.py
 ```
 
 ---
 
-## 📄 License
+## License
 
-MIT License. Designed for use with Google Antigravity IDE and Google Gemini.
+MIT License. See [LICENSE](LICENSE) for details.
