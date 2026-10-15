@@ -1,5 +1,9 @@
 <div align="center">
-  <img src="branding/dist/logo-lockup.png" width="520" alt="Antigravity MCP Orchestrator" />
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="branding/dist/logo-dark-lockup.png" />
+    <source media="(prefers-color-scheme: light)" srcset="branding/dist/logo-lockup.png" />
+    <img alt="Antigravity MCP Orchestrator" src="branding/dist/logo-lockup.png" width="520" />
+  </picture>
 
   <h1>Antigravity MCP Orchestrator</h1>
 
