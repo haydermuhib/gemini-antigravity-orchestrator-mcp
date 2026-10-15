@@ -19,6 +19,11 @@ env/
 venv/
 ENV/
 
+# Packaging and distribution
+dist/
+build/
+*.egg-info/
+
 # Sensitive or temporary files
 .env
 *.swp

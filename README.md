@@ -13,6 +13,7 @@
   </p>
 
   <p>
+    <a href="https://pypi.org/project/antigravity-mcp/"><img src="https://img.shields.io/pypi/v/antigravity-mcp.svg?color=red" alt="PyPI version" /></a>
     <a href="https://modelcontextprotocol.io"><img src="https://img.shields.io/badge/MCP-2024--11--05-blue.svg" alt="MCP Protocol" /></a>
     <a href="https://python.org"><img src="https://img.shields.io/badge/Python-3.10%2B-brightgreen.svg" alt="Python" /></a>
     <a href="https://github.com/haydermuhib/gemini-antigravity-orchestrator-mcp"><img src="https://img.shields.io/badge/Platforms-Linux%20%7C%20macOS%20%7C%20Windows-blue.svg" alt="Platforms" /></a>
@@ -44,9 +45,21 @@ Google Gemini cloud services connect to external MCP servers over public HTTPS U
 
 ## Quick Start
 
-### Installation
+### 1. Install from PyPI (Recommended)
 
-Clone the repository and run the setup script:
+Install using `pip` or execute on-the-fly with `uvx` / `pipx`:
+
+```bash
+# Standard installation
+pip install antigravity-mcp
+
+# Or run instantly without pre-installing:
+uvx antigravity-mcp --tunnel
+```
+
+### 2. Install from Source
+
+Clone the repository and execute the setup script:
 
 ```bash
 git clone https://github.com/haydermuhib/gemini-antigravity-orchestrator-mcp.git

@@ -1,0 +1,56 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "antigravity-mcp"
+version = "1.0.0"
+description = "Model Context Protocol (MCP) server connecting Google Gemini to Antigravity IDE and workspace workflows."
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+authors = [
+    { name = "Haider Muhib" }
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Build Tools",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+keywords = [
+    "mcp",
+    "model-context-protocol",
+    "gemini",
+    "antigravity",
+    "agentic",
+    "ai-agents",
+    "developer-tools"
+]
+dependencies = []
+
+[project.scripts]
+antigravity-mcp = "antigravity_mcp.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/haydermuhib/gemini-antigravity-orchestrator-mcp"
+Repository = "https://github.com/haydermuhib/gemini-antigravity-orchestrator-mcp.git"
+Issues = "https://github.com/haydermuhib/gemini-antigravity-orchestrator-mcp/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["antigravity_mcp"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/antigravity_mcp",
+    "/README.md",
+    "/LICENSE",
+    "/gemini_mcp_config.json"
+]

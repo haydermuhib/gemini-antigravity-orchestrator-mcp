@@ -8,6 +8,9 @@ platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
 
 [dependencies]
 python = ">=3.10"
+hatchling = ">=1.32.4,<2"
+twine = ">=7.0.0,<8"
+python-build = ">=1.6.1,<2"
 
 [tasks]
 server = "python3 server.py"

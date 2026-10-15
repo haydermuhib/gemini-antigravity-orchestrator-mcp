@@ -265,6 +265,34 @@
     }
 
     /* Installation Command Box */
+    .install-container {
+      margin-bottom: 24px;
+    }
+
+    .install-tabs {
+      display: flex;
+      gap: 4px;
+    }
+
+    .install-tab {
+      font-family: 'VT323', monospace;
+      font-size: 18px;
+      padding: 6px 14px;
+      background: #18181b;
+      color: var(--text-muted);
+      border: 2px solid #27272a;
+      border-bottom: none;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .install-tab.active {
+      background: #09090b;
+      color: var(--red-primary);
+      border-color: #27272a;
+    }
+
     .install-box {
       background: #09090b;
       border: 2px solid #27272a;
@@ -275,7 +303,6 @@
       justify-content: space-between;
       gap: 16px;
       flex-wrap: wrap;
-      margin-bottom: 24px;
     }
 
     .install-cmd {
@@ -552,12 +579,19 @@
         A Model Context Protocol server that bridges Google Gemini Connected Apps (HTTPS / SSE) and local desktop clients directly to your development workstation. Inspect 160+ skills, run commands, and browse plugins with zero external dependencies.
       </p>
 
-      <!-- One-line Install Box -->
-      <div class="install-box" id="install">
-        <div class="install-cmd">
-          <span>$ </span>curl -fsSL https://raw.githubusercontent.com/haydermuhib/gemini-antigravity-orchestrator-mcp/main/install.sh | bash
+      <!-- One-line Install Box with PIP and CURL tabs -->
+      <div class="install-container" id="install">
+        <div class="install-tabs">
+          <button class="install-tab active" id="tabPip" onclick="setInstallTab('pip')">PIP (PYPI)</button>
+          <button class="install-tab" id="tabUvx" onclick="setInstallTab('uvx')">UVX (INSTANT)</button>
+          <button class="install-tab" id="tabCurl" onclick="setInstallTab('curl')">SHELL (CURL)</button>
         </div>
-        <button class="copy-btn" id="copyBtn" onclick="copyInstallCmd()">COPY CMD</button>
+        <div class="install-box">
+          <div class="install-cmd" id="installCmdText">
+            <span>$ </span>pip install antigravity-mcp
+          </div>
+          <button class="copy-btn" id="copyBtn" onclick="copyInstallCmd()">COPY CMD</button>
+        </div>
       </div>
 
       <div class="hero-actions">
@@ -722,9 +756,31 @@
   </footer>
 
   <script>
+    let activeCmd = "pip install antigravity-mcp";
+
+    function setInstallTab(type) {
+      document.getElementById('tabPip').classList.remove('active');
+      document.getElementById('tabUvx').classList.remove('active');
+      document.getElementById('tabCurl').classList.remove('active');
+
+      const cmdText = document.getElementById('installCmdText');
+      if (type === 'pip') {
+        document.getElementById('tabPip').classList.add('active');
+        activeCmd = "pip install antigravity-mcp";
+        cmdText.innerHTML = '<span>$ </span>pip install antigravity-mcp';
+      } else if (type === 'uvx') {
+        document.getElementById('tabUvx').classList.add('active');
+        activeCmd = "uvx antigravity-mcp --tunnel";
+        cmdText.innerHTML = '<span>$ </span>uvx antigravity-mcp --tunnel';
+      } else if (type === 'curl') {
+        document.getElementById('tabCurl').classList.add('active');
+        activeCmd = "curl -fsSL https://raw.githubusercontent.com/haydermuhib/gemini-antigravity-orchestrator-mcp/main/install.sh | bash";
+        cmdText.innerHTML = '<span>$ </span>curl -fsSL https://raw.githubusercontent.com/haydermuhib/gemini-antigravity-orchestrator-mcp/main/install.sh | bash';
+      }
+    }
+
     function copyInstallCmd() {
-      const cmd = "curl -fsSL https://raw.githubusercontent.com/haydermuhib/gemini-antigravity-orchestrator-mcp/main/install.sh | bash";
-      navigator.clipboard.writeText(cmd).then(() => {
+      navigator.clipboard.writeText(activeCmd).then(() => {
         const btn = document.getElementById('copyBtn');
         const orig = btn.innerText;
         btn.innerText = "COPIED!";
